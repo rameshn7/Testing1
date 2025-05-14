@@ -5,7 +5,7 @@ addEventListener('fetch', event => {
 async function handleRequest(request) {
   // Set CORS headers to only allow your specific domain
   const corsHeaders = {
-    'Access-Control-Allow-Origin': 'https://yourwebsite.com', // Replace with your actual domain
+    'Access-Control-Allow-Origin': 'https://allinonevideoplayeronline.blogspot.com/', // Replace with your actual domain
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
