@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Video Downloader - Download Videos in HD Quality</title>
+  <meta name="description" content="Free online video downloader tool that supports multiple platforms. Download high quality videos in MP4 format with our fast and secure service. No registration required.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #9b27ca 0%, #9927cf 0%, #d33639 100%, #f92121 100%);
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .header-ad {
+      width: 100%;
+      height: 90px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px dashed #ccc;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    
+    #videoUrl {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    
+    #videoUrl:focus {
+      border-color: #9b27ca;
+    }
+    
+    #downloadBtn, #popupDownloadBtn {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #9b27ca 0%, #d33639 100%);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    #downloadBtn:hover, #popupDownloadBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    #downloadBtn:disabled, #popupDownloadBtn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Timer Styles */
+    .timer-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin: 30px 0;
+    }
+    
+    .timer-ad-top, .timer-ad-bottom {
+      width: 100%;
+      height: 100px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px 0;
+      border-radius: 5px;
+      border: 1px dashed #ccc;
+    }
+    
+    .timer-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #9b27ca 0%, #d33639 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    .timer-inner {
+      width: 130px;
+      height: 130px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      color: #9b27ca;
+    }
+    
+    .timer-text {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #555;
+      text-align: center;
+    }
+    
+    /* Popup Styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .popup-content h2 {
+      color: #9b27ca;
+      margin-bottom: 20px;
+    }
+    
+    .popup-ad {
+      width: 100%;
+      height: 100px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      border-radius: 5px;
+      border: 1px dashed #ccc;
+    }
+    
+    /* Description Styles */
+    .description {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      line-height: 1.6;
+    }
+    
+    .description h2 {
+      color: #9b27ca;
+      margin-bottom: 15px;
+    }
+    
+    .description p {
+      margin-bottom: 15px;
+    }
+    
+    .description-ad {
+      width: 100%;
+      height: 250px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      border-radius: 5px;
+      border: 1px dashed #ccc;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .search-container {
+        flex-direction: column;
+      }
+      
+      #downloadBtn, #popupDownloadBtn {
+        width: 100%;
+      }
+      
+      .description-ad {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Popup for URL parameter -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup-content">
+      <h2>Download Video</h2>
+      <p>We found a video link in the URL. Would you like to download it?</p>
+      
+      <div class="popup-ad">
+        <script type="text/javascript">
+	atOptions = {
+		'key' : '5e170be9c2db8119a4eb1f4a56a83e00',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/5e170be9c2db8119a4eb1f4a56a83e00/invoke.js"></script>
+      </div>
+      
+      <button id="popupDownloadBtn">Start Download</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="header-ad">
+        <script type="text/javascript">
+	atOptions = {
+		'key' : '03536b3a479340244ce9abc64e62289e',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/03536b3a479340244ce9abc64e62289e/invoke.js"></script>
+      </div>
+      <h1>Fast Video Downloader</h1>
+      <p style="text-align: center; color: #666;">Download videos from multiple platforms in HD quality</p>
+    </header>
+    
+    <div class="main-content">
+      <div class="search-container">
+        <input type="text" id="videoUrl" placeholder="Paste video link here..." required>
+        <button id="downloadBtn">Download</button>
+      </div>
+      
+      <div class="timer-container" id="timerContainer">
+        <div class="timer-ad-top">
+          <script type="text/javascript">
+	atOptions = {
+		'key' : 'c743403590a98f25ab9f3c163ceb6750',
+		'format' : 'iframe',
+		'height' : 250,
+		'width' : 300,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/c743403590a98f25ab9f3c163ceb6750/invoke.js"></script>
+        </div>
+        
+        <div class="timer-circle">
+          <div class="timer-inner" id="timerDisplay">15</div>
+        </div>
+        <p class="timer-text">Preparing your download...</p>
+        
+        <div class="timer-ad-bottom">
+          <script type="text/javascript">
+	atOptions = {
+		'key' : 'ca6ac84328b962160d382fd0f5ec737c',
+		'format' : 'iframe',
+		'height' : 300,
+		'width' : 160,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/ca6ac84328b962160d382fd0f5ec737c/invoke.js"></script>
+        </div>
+      </div>
+      
+      <div class="description">
+        <h2>Free Online Video Downloader</h2>
+        <p>Our video downloader service allows you to download videos from various platforms quickly and easily. Simply paste the video URL in the input field above and click the download button to get started.</p>
+        <p>We support downloading videos in multiple formats and qualities, including HD and 4K when available. Our service is completely free to use with no registration required.</p>
+        
+        <div class="description-ad">
+          <script async="async" data-cfasync="false" src="//pl26658265.profitableratecpm.com/3d4052ca9271f5b38b60c9d182febc44/invoke.js"></script>
+          <div id="container-3d4052ca9271f5b38b60c9d182febc44"></div>
+        </div>
+        
+        <h2>How to Download Videos</h2>
+        <ol>
+          <li>Copy the video URL from your browser's address bar or the share button</li>
+          <li>Paste the URL in the input field above</li>
+          <li>Click the "Download" button</li>
+          <li>Wait for the timer to complete (this helps us cover server costs)</li>
+          <li>Your download will start automatically</li>
+        </ol>
+        
+        <h2>Supported Websites</h2>
+        <p>Our downloader works with most popular video sharing platforms including YouTube, Facebook, Instagram, Twitter, TikTok, and many more. If you encounter any issues with a specific website, please let us know.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Video Downloader Functionality
+    const videoUrlInput = document.getElementById("videoUrl");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupDownloadBtn = document.getElementById("popupDownloadBtn");
+    const timerContainer = document.getElementById("timerContainer");
+    const timerDisplay = document.getElementById("timerDisplay");
+    
+    let countdown;
+    let timeLeft = 15;
+    let currentVideoUrl = '';
+    
+    // Main download button click handler
+    downloadBtn.addEventListener("click", () => {
+      const videoUrl = videoUrlInput.value.trim();
+      handleDownload(videoUrl);
+    });
+    
+    // Popup download button click handler
+    popupDownloadBtn.addEventListener("click", () => {
+      handleDownload(currentVideoUrl);
+      popupOverlay.style.display = "none";
+    });
+    
+    function handleDownload(videoUrl) {
+      if (!videoUrl) {
+        alert("Please enter a video URL");
+        return;
+      }
+      
+      // Check if URL is valid
+      try {
+        new URL(videoUrl);
+      } catch (e) {
+        alert("Please enter a valid URL");
+        return;
+      }
+      
+      // Start the download process
+      startDownload(videoUrl);
+    }
+    
+    function startDownload(videoUrl) {
+      // Disable the download button
+      downloadBtn.disabled = true;
+      popupDownloadBtn.disabled = true;
+      
+      // Fill the input field
+      videoUrlInput.value = videoUrl;
+      
+      // Show the timer
+      timerContainer.style.display = "flex";
+      
+      // Start countdown
+      timeLeft = 15;
+      timerDisplay.textContent = timeLeft;
+      
+      countdown = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          completeDownload(videoUrl);
+        }
+      }, 1000);
+    }
+    
+    function completeDownload(videoUrl) {
+      // Create the download URL using the API
+      const downloadUrl = `https://downloadall2.n7videos.workers.dev/?url=${encodeURIComponent(videoUrl)}`;
+      
+      // Redirect to the download URL
+      window.location.href = downloadUrl;
+    }
+    
+    // Stop timer if fullscreen element appears (like ads or warnings)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (document.fullscreenElement || 
+            document.webkitFullscreenElement || 
+            document.mozFullScreenElement || 
+            document.msFullscreenElement) {
+          clearInterval(countdown);
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+    
+    // Check for URL parameter on page load
+    window.addEventListener("load", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const videoUrl = urlParams.get('url');
+      
+      if (videoUrl) {
+        currentVideoUrl = videoUrl;
+        // Show popup instead of automatically starting
+        popupOverlay.style.display = "flex";
+      }
+    });
+  </script>
+</body>
+</html>
