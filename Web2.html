@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Video Player By- WOODcraft</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.3/dist/hls.min.js"></script>
+  <style>
+    /* [Your existing CSS remains exactly the same] */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="player-container">
+      <video id="videoPlayer" controls autoplay muted></video>
+    </div>
+    <div class="title">WOODcraft</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const video = document.getElementById('videoPlayer');
+      
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        // REPLACE THIS WITH YOUR ACTUAL HLS STREAM URL
+        hls.loadSource('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
+        hls.attachMedia(video);
+        
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+          video.play().catch(e => {
+            console.log('Autoplay prevented:', e);
+          });
+        });
+      }
+      // Fallback for native HLS support
+      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        video.addEventListener('loadedmetadata', function() {
+          video.play().catch(e => {
+            console.log('Autoplay prevented:', e);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
