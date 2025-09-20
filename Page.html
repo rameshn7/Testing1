@@ -1,0 +1,49 @@
+<script>
+    // User verification system for the second page
+    const userVerificationSecond = {
+        // Get user verification data from localStorage
+        getVerificationData: function() {
+            return JSON.parse(localStorage.getItem('userVerificationData') || '{}');
+        },
+        
+        // Send verification data to server for the second page
+        sendSecondPageVerification: function() {
+            const verificationData = this.getVerificationData();
+            
+            // Add second page information
+            verificationData.secondPageVisit = new Date().toISOString();
+            verificationData.secondPageUrl = window.location.href;
+            
+            // In a real implementation, you would send this to your server
+            console.log('Second page verification data:', verificationData);
+            
+            // Example of sending to server (commented out for this demo)
+            /*
+            fetch('https://your-server.com/track-second-page', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(verificationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+            */
+        },
+        
+        // Initialize verification for second page
+        init: function() {
+            this.sendSecondPageVerification();
+        }
+    };
+
+    // Initialize verification when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        userVerificationSecond.init();
+    });
+</script>
