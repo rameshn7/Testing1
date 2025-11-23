@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Uptime Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-card {
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .status-up {
+            color: #10b981;
+        }
+
+        .status-down {
+            color: #ef4444;
+        }
+
+        .status-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .response-time {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+
+        .history-card {
+            grid-column: 1 / -1;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .badge-up {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .last-checked {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Website Uptime Monitor</h1>
+            <p>Real-time monitoring for your website - Auto-refreshes every 60 seconds</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="card status-card">
+                <div class="status-icon" id="statusIcon">⏳</div>
+                <div class="status-text" id="statusText">Checking...</div>
+                <div class="response-time" id="responseTime">-</div>
+                <div class="last-checked" id="lastChecked">Never checked</div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Quick Stats</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="uptimePercent">-</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalChecks">0</div>
+                        <div class="stat-label">Total Checks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="successfulChecks">0</div>
+                        <div class="stat-label">Successful</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="failedChecks">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card history-card">
+                <h3>📈 Check History</h3>
+                <div class="history-list" id="historyList">
+                    <!-- History items will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="checkSite()">Check Now</button>
+            <button class="btn-secondary" onclick="clearHistory()">Clear History</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const SITE_URL = 'https://evident-petrina-urlsave-2998df90.koyeb.app/'; // Change this to your site URL
+        const CHECK_INTERVAL = 60000; // 60 seconds
+        const MAX_HISTORY = 50; // Maximum history items to keep
+
+        // State
+        let checkHistory = JSON.parse(localStorage.getItem('siteCheckHistory')) || [];
+        let stats = JSON.parse(localStorage.getItem('siteStats')) || {
+            totalChecks: 0,
+            successfulChecks: 0,
+            failedChecks: 0
+        };
+
+        // DOM Elements
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const responseTime = document.getElementById('responseTime');
+        const lastChecked = document.getElementById('lastChecked');
+        const historyList = document.getElementById('historyList');
+        const uptimePercent = document.getElementById('uptimePercent');
+        const totalChecks = document.getElementById('totalChecks');
+        const successfulChecks = document.getElementById('successfulChecks');
+        const failedChecks = document.getElementById('failedChecks');
+
+        // Initialize
+        updateStats();
+        renderHistory();
+        checkSite(); // Check immediately on load
+
+        // Set up automatic checking
+        setInterval(checkSite, CHECK_INTERVAL);
+
+        async function checkSite() {
+            const timestamp = new Date();
+            const startTime = Date.now();
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+                const response = await fetch(SITE_URL, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: {
+                        'User-Agent': 'Uptime-Monitor/1.0',
+                        'X-Monitoring': 'true'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                const endTime = Date.now();
+                const responseTimeMs = endTime - startTime;
+
+                const isSuccess = response.status >= 200 && response.status < 400;
+                
+                // Update UI
+                if (isSuccess) {
+                    statusIcon.textContent = '✅';
+                    statusIcon.className = 'status-icon status-up';
+                    statusText.textContent = 'Site is UP';
+                    statusText.style.color = '#10b981';
+                    responseTime.textContent = `Response Time: ${responseTimeMs}ms | Status: ${response.status}`;
+                } else {
+                    statusIcon.textContent = '⚠️';
+                    statusIcon.className = 'status-icon status-down';
+                    statusText.textContent = 'Site has issues';
+                    statusText.style.color = '#f59e0b';
+                    responseTime.textContent = `Response Time: ${responseTimeMs}ms | Status: ${response.status}`;
+                }
+
+                // Record check
+                recordCheck(true, response.status, responseTimeMs, timestamp);
+
+            } catch (error) {
+                const endTime = Date.now();
+                const responseTimeMs = endTime - startTime;
+
+                // Update UI for failure
+                statusIcon.textContent = '❌';
+                statusIcon.className = 'status-icon status-down';
+                statusText.textContent = 'Site is DOWN';
+                statusText.style.color = '#ef4444';
+                responseTime.textContent = `Error: ${error.message}`;
+
+                // Record check
+                recordCheck(false, 0, responseTimeMs, timestamp, error.message);
+            }
+
+            lastChecked.textContent = `Last checked: ${timestamp.toLocaleString()}`;
+        }
+
+        function recordCheck(success, statusCode, responseTime, timestamp, error = '') {
+            const check = {
+                success,
+                statusCode,
+                responseTime,
+                timestamp: timestamp.toISOString(),
+                error,
+                displayTime: timestamp.toLocaleString()
+            };
+
+            // Add to history
+            checkHistory.unshift(check);
+            if (checkHistory.length > MAX_HISTORY) {
+                checkHistory = checkHistory.slice(0, MAX_HISTORY);
+            }
+
+            // Update stats
+            stats.totalChecks++;
+            if (success) {
+                stats.successfulChecks++;
+            } else {
+                stats.failedChecks++;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('siteCheckHistory', JSON.stringify(checkHistory));
+            localStorage.setItem('siteStats', JSON.stringify(stats));
+
+            // Update UI
+            updateStats();
+            renderHistory();
+        }
+
+        function updateStats() {
+            totalChecks.textContent = stats.totalChecks;
+            successfulChecks.textContent = stats.successfulChecks;
+            failedChecks.textContent = stats.failedChecks;
+
+            // Calculate uptime percentage
+            if (stats.totalChecks > 0) {
+                const uptime = ((stats.successfulChecks / stats.totalChecks) * 100).toFixed(1);
+                uptimePercent.textContent = `${uptime}%`;
+            } else {
+                uptimePercent.textContent = '0%';
+            }
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = '';
+            
+            checkHistory.forEach(check => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                historyItem.innerHTML = `
+                    <span>${check.displayTime}</span>
+                    <span class="status-badge ${check.success ? 'badge-up' : 'badge-down'}">
+                        ${check.success ? `UP (${check.statusCode})` : 'DOWN'}
+                    </span>
+                    <span>${check.responseTime}ms</span>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                checkHistory = [];
+                stats = {
+                    totalChecks: 0,
+                    successfulChecks: 0,
+                    failedChecks: 0
+                };
+                localStorage.removeItem('siteCheckHistory');
+                localStorage.removeItem('siteStats');
+                updateStats();
+                renderHistory();
+            }
+        }
+
+        // Export functionality (optional)
+        function exportHistory() {
+            const dataStr = JSON.stringify(checkHistory, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `uptime-history-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+                          </html>
